@@ -13,7 +13,7 @@ public class PlayerController : MonoBehaviour
     GameObject heldObject = null;
 
     IA_Basketball controls;
-    float sensitivity = 9;
+    float sensitivity = 0.1f;
 
     bool aiming = false;
 
@@ -76,7 +76,7 @@ public class PlayerController : MonoBehaviour
 
     private void Look(InputAction.CallbackContext context)
     {
-        Vector2 lookInput = context.ReadValue<Vector2>() * Time.deltaTime * sensitivity;
+        Vector2 lookInput = context.ReadValue<Vector2>() * sensitivity;
         transform.localRotation = Quaternion.Euler(
             ClampAngle(transform.localRotation.eulerAngles.x - lookInput.y, -90, 90), 
             transform.localRotation.eulerAngles.y + lookInput.x, 0);
