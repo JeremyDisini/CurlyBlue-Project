@@ -102,13 +102,13 @@ public partial class @IA_Basketball: IInputActionCollection2, IDisposable
                     ""initialStateCheck"": true
                 },
                 {
-                    ""name"": ""Move"",
-                    ""type"": ""Value"",
-                    ""id"": ""488df81e-7103-4127-a667-9dd1046e7770"",
-                    ""expectedControlType"": ""Vector2"",
+                    ""name"": ""Aim"",
+                    ""type"": ""Button"",
+                    ""id"": ""f34f4db9-b69d-4df8-bd9e-08444dc54a51"",
+                    ""expectedControlType"": """",
                     ""processors"": """",
-                    ""interactions"": """",
-                    ""initialStateCheck"": true
+                    ""interactions"": ""Hold(duration=0.005,pressPoint=0.01)"",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -135,68 +135,13 @@ public partial class @IA_Basketball: IInputActionCollection2, IDisposable
                     ""isPartOfComposite"": false
                 },
                 {
-                    ""name"": ""WASD"",
-                    ""id"": ""f97157c6-f1bf-4e26-aba0-134b112b0ea3"",
-                    ""path"": ""2DVector"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""Move"",
-                    ""isComposite"": true,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": ""up"",
-                    ""id"": ""85a19610-b616-4362-aca1-9f2afb94d64e"",
-                    ""path"": ""<Keyboard>/w"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""Move"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": true
-                },
-                {
-                    ""name"": ""down"",
-                    ""id"": ""4e40c5cc-86b0-4a04-a0bb-27f3654a9e36"",
-                    ""path"": ""<Keyboard>/s"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""Move"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": true
-                },
-                {
-                    ""name"": ""left"",
-                    ""id"": ""4824f7f6-d21e-444d-a577-5d792df5fd6d"",
-                    ""path"": ""<Keyboard>/a"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""Move"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": true
-                },
-                {
-                    ""name"": ""right"",
-                    ""id"": ""d310510d-9e95-480f-940a-77cc636ea8c0"",
-                    ""path"": ""<Keyboard>/d"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""Move"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": true
-                },
-                {
                     ""name"": """",
-                    ""id"": ""d74533a8-95d0-40c0-8637-cbe54d00f48a"",
-                    ""path"": ""<Gamepad>/leftStick"",
+                    ""id"": ""1d6ba9af-2ba7-4505-81d4-242994f3ab07"",
+                    ""path"": ""<Mouse>/rightButton"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
-                    ""action"": ""Move"",
+                    ""action"": ""Aim"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -208,7 +153,7 @@ public partial class @IA_Basketball: IInputActionCollection2, IDisposable
         // Normal
         m_Normal = asset.FindActionMap("Normal", throwIfNotFound: true);
         m_Normal_Look = m_Normal.FindAction("Look", throwIfNotFound: true);
-        m_Normal_Move = m_Normal.FindAction("Move", throwIfNotFound: true);
+        m_Normal_Aim = m_Normal.FindAction("Aim", throwIfNotFound: true);
     }
 
     ~@IA_Basketball()
@@ -290,7 +235,7 @@ public partial class @IA_Basketball: IInputActionCollection2, IDisposable
     private readonly InputActionMap m_Normal;
     private List<INormalActions> m_NormalActionsCallbackInterfaces = new List<INormalActions>();
     private readonly InputAction m_Normal_Look;
-    private readonly InputAction m_Normal_Move;
+    private readonly InputAction m_Normal_Aim;
     /// <summary>
     /// Provides access to input actions defined in input action map "Normal".
     /// </summary>
@@ -307,9 +252,9 @@ public partial class @IA_Basketball: IInputActionCollection2, IDisposable
         /// </summary>
         public InputAction @Look => m_Wrapper.m_Normal_Look;
         /// <summary>
-        /// Provides access to the underlying input action "Normal/Move".
+        /// Provides access to the underlying input action "Normal/Aim".
         /// </summary>
-        public InputAction @Move => m_Wrapper.m_Normal_Move;
+        public InputAction @Aim => m_Wrapper.m_Normal_Aim;
         /// <summary>
         /// Provides access to the underlying input action map instance.
         /// </summary>
@@ -339,9 +284,9 @@ public partial class @IA_Basketball: IInputActionCollection2, IDisposable
             @Look.started += instance.OnLook;
             @Look.performed += instance.OnLook;
             @Look.canceled += instance.OnLook;
-            @Move.started += instance.OnMove;
-            @Move.performed += instance.OnMove;
-            @Move.canceled += instance.OnMove;
+            @Aim.started += instance.OnAim;
+            @Aim.performed += instance.OnAim;
+            @Aim.canceled += instance.OnAim;
         }
 
         /// <summary>
@@ -356,9 +301,9 @@ public partial class @IA_Basketball: IInputActionCollection2, IDisposable
             @Look.started -= instance.OnLook;
             @Look.performed -= instance.OnLook;
             @Look.canceled -= instance.OnLook;
-            @Move.started -= instance.OnMove;
-            @Move.performed -= instance.OnMove;
-            @Move.canceled -= instance.OnMove;
+            @Aim.started -= instance.OnAim;
+            @Aim.performed -= instance.OnAim;
+            @Aim.canceled -= instance.OnAim;
         }
 
         /// <summary>
@@ -407,11 +352,11 @@ public partial class @IA_Basketball: IInputActionCollection2, IDisposable
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnLook(InputAction.CallbackContext context);
         /// <summary>
-        /// Method invoked when associated input action "Move" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// Method invoked when associated input action "Aim" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
         /// </summary>
         /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
-        void OnMove(InputAction.CallbackContext context);
+        void OnAim(InputAction.CallbackContext context);
     }
 }
