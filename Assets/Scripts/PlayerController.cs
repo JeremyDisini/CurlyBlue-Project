@@ -10,6 +10,8 @@ public class PlayerController : MonoBehaviour
     GameObject hand;
     Vector3 initialHandPosition;
 
+    GameObject heldObject = null;
+
     IA_Basketball controls;
     float sensitivity = 9;
 
@@ -23,11 +25,31 @@ public class PlayerController : MonoBehaviour
         controls.Enable();
         
         controls.Normal.Look.performed += Look;
+
         controls.Normal.Aim.performed += StartAim;
         controls.Normal.Aim.canceled += StopAim;
 
+        controls.Normal.Fire.performed += Fire;
         //record initial hand position
         initialHandPosition = hand.transform.localPosition;
+    }
+
+    private void Fire(InputAction.CallbackContext context)
+    {
+        if(aiming)
+        {
+            //shoot the ball
+        }
+        else if(heldObject == null)
+        {
+            RaycastHit hit;
+            Ray ray = Camera.main.ScreenPointToRay(new Vector3(Screen.width/2, Screen.height/2, 0));
+            
+            if (Physics.Raycast(ray, out hit, 10) && hit.transform.gameObject.CompareTag("HeldObject")) 
+            {
+                heldObject = hit.transform.gameObject;
+            }
+        }
     }
 
     private void StopAim(InputAction.CallbackContext context)
@@ -66,6 +88,11 @@ public class PlayerController : MonoBehaviour
             hand.transform.localPosition = initialHandPosition;
         }
 
+        if(heldObject != null)
+        {
+            heldObject.transform.position = Vector3.Lerp(heldObject.transform.position, hand.transform.position, Time.deltaTime * 20);
+            heldObject.GetComponent<Rigidbody>().isKinematic = true;
+        }
     }
 
     void OnDestroy()

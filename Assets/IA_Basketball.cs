@@ -109,6 +109,15 @@ public partial class @IA_Basketball: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": ""Hold(duration=0.005,pressPoint=0.01)"",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Fire"",
+                    ""type"": ""Button"",
+                    ""id"": ""96f600ce-0f56-45f3-830a-389189a7910b"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -144,6 +153,17 @@ public partial class @IA_Basketball: IInputActionCollection2, IDisposable
                     ""action"": ""Aim"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""48a066dd-b558-495b-99fa-7cdca6924e7f"",
+                    ""path"": ""<Mouse>/leftButton"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Fire"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -154,6 +174,7 @@ public partial class @IA_Basketball: IInputActionCollection2, IDisposable
         m_Normal = asset.FindActionMap("Normal", throwIfNotFound: true);
         m_Normal_Look = m_Normal.FindAction("Look", throwIfNotFound: true);
         m_Normal_Aim = m_Normal.FindAction("Aim", throwIfNotFound: true);
+        m_Normal_Fire = m_Normal.FindAction("Fire", throwIfNotFound: true);
     }
 
     ~@IA_Basketball()
@@ -236,6 +257,7 @@ public partial class @IA_Basketball: IInputActionCollection2, IDisposable
     private List<INormalActions> m_NormalActionsCallbackInterfaces = new List<INormalActions>();
     private readonly InputAction m_Normal_Look;
     private readonly InputAction m_Normal_Aim;
+    private readonly InputAction m_Normal_Fire;
     /// <summary>
     /// Provides access to input actions defined in input action map "Normal".
     /// </summary>
@@ -255,6 +277,10 @@ public partial class @IA_Basketball: IInputActionCollection2, IDisposable
         /// Provides access to the underlying input action "Normal/Aim".
         /// </summary>
         public InputAction @Aim => m_Wrapper.m_Normal_Aim;
+        /// <summary>
+        /// Provides access to the underlying input action "Normal/Fire".
+        /// </summary>
+        public InputAction @Fire => m_Wrapper.m_Normal_Fire;
         /// <summary>
         /// Provides access to the underlying input action map instance.
         /// </summary>
@@ -287,6 +313,9 @@ public partial class @IA_Basketball: IInputActionCollection2, IDisposable
             @Aim.started += instance.OnAim;
             @Aim.performed += instance.OnAim;
             @Aim.canceled += instance.OnAim;
+            @Fire.started += instance.OnFire;
+            @Fire.performed += instance.OnFire;
+            @Fire.canceled += instance.OnFire;
         }
 
         /// <summary>
@@ -304,6 +333,9 @@ public partial class @IA_Basketball: IInputActionCollection2, IDisposable
             @Aim.started -= instance.OnAim;
             @Aim.performed -= instance.OnAim;
             @Aim.canceled -= instance.OnAim;
+            @Fire.started -= instance.OnFire;
+            @Fire.performed -= instance.OnFire;
+            @Fire.canceled -= instance.OnFire;
         }
 
         /// <summary>
@@ -358,5 +390,12 @@ public partial class @IA_Basketball: IInputActionCollection2, IDisposable
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnAim(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "Fire" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnFire(InputAction.CallbackContext context);
     }
 }

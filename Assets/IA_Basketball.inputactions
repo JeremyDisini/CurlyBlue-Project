@@ -23,6 +23,15 @@
                     "processors": "",
                     "interactions": "Hold(duration=0.005,pressPoint=0.01)",
                     "initialStateCheck": false
+                },
+                {
+                    "name": "Fire",
+                    "type": "Button",
+                    "id": "96f600ce-0f56-45f3-830a-389189a7910b",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
                 }
             ],
             "bindings": [
@@ -56,6 +65,17 @@
                     "processors": "",
                     "groups": "",
                     "action": "Aim",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "48a066dd-b558-495b-99fa-7cdca6924e7f",
+                    "path": "<Mouse>/leftButton",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Fire",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }
