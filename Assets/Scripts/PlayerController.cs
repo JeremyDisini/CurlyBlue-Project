@@ -36,16 +36,21 @@ public class PlayerController : MonoBehaviour
 
     private void Fire(InputAction.CallbackContext context)
     {
-        if(aiming)
+        if(heldObject != null && aiming)
         {
             //shoot the ball
+            Rigidbody rb = heldObject.GetComponent<Rigidbody>();
+            heldObject = null;
+            rb.isKinematic = false;
+            rb.linearVelocity = transform.forward * 10 + transform.up * 5;
+            rb.angularVelocity = Vector3.zero;
         }
         else if(heldObject == null)
         {
             RaycastHit hit;
             Ray ray = Camera.main.ScreenPointToRay(new Vector3(Screen.width/2, Screen.height/2, 0));
             
-            if (Physics.Raycast(ray, out hit, 10) && hit.transform.gameObject.CompareTag("HeldObject")) 
+            if (Physics.Raycast(ray, out hit, 1000) && hit.transform.gameObject.CompareTag("HeldObject")) 
             {
                 heldObject = hit.transform.gameObject;
             }
