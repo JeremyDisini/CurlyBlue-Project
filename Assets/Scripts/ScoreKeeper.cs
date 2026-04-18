@@ -5,6 +5,9 @@ using UnityEngine;
 public class ScoreKeeper : MonoBehaviour
 {
     [SerializeField]
+    Animator anim;
+
+    [SerializeField]
     TextMeshPro scoreboard;
 
     int score = 0;
@@ -12,5 +15,7 @@ public class ScoreKeeper : MonoBehaviour
     {
         score++;
         scoreboard.text = score.ToString();
+
+        anim.Play("OnScore", 0, 0);
     }
 }

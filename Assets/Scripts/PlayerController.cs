@@ -8,10 +8,25 @@ using System.Collections;
 public class PlayerController : MonoBehaviour
 {
     [SerializeField]
+    float maxThrowStrength = 20.0f;
+
+    [SerializeField]
+    float verticalThrowSpeed = 5.0f;
+
+    [SerializeField]
+    float slomoDuration = 0.5f;
+
+    [SerializeField]
+    float throwStrengthFovInfluence = 20.0f;
+
+    [SerializeField]
     GameObject hand;
+
+    float baseFov;
     Vector3 initialHandPosition;
 
     GameObject heldObject = null;
+    public GameObject hoveredObject = null;
 
     IA_Basketball controls;
     float sensitivity = 0.1f;
@@ -23,89 +38,68 @@ public class PlayerController : MonoBehaviour
 
     void Start()
     {
-        //setup for mouse controls
+        //controls setup
         controls = new IA_Basketball();
         UnityEngine.Cursor.lockState = CursorLockMode.Locked;
         controls.Enable();
-        
         controls.Normal.Look.performed += Look;
-
         controls.Normal.Aim.performed += StartAim;
         controls.Normal.Aim.canceled += StopAim;
-
         controls.Normal.Fire.performed += Fire;
-        //record initial hand position
+        
         initialHandPosition = hand.transform.localPosition;
+
+        baseFov = 80.0f;
     }
 
     private void Fire(InputAction.CallbackContext context)
     {
-        if(heldObject != null && aiming)
+        //if holding an object, then fire it
+        if(heldObject != null)
         {
-            //shoot the ball
             Rigidbody rb = heldObject.GetComponent<Rigidbody>();
             heldObject = null;
             rb.isKinematic = false;
-            rb.linearVelocity = transform.forward * (20 * throwStrength) + transform.up * 5;
+            rb.linearVelocity = transform.forward * (maxThrowStrength * throwStrength) + transform.up * verticalThrowSpeed;
             rb.angularVelocity = Vector3.zero;
+
+            //trigger a slow motion effect when firing
             StartCoroutine(SlowMo());
         }
-        else if(heldObject == null)
+        //otherwise, if hovering over an object, then pick it up
+        else if(hoveredObject != null)
         {
-            RaycastHit hit;
-            Ray ray = Camera.main.ScreenPointToRay(new Vector3(Screen.width/2, Screen.height/2, 0));
-            
-            if (Physics.Raycast(ray, out hit, 1000) && hit.transform.gameObject.CompareTag("HeldObject")) 
-            {
-                heldObject = hit.transform.gameObject;
-            }
+            heldObject = hoveredObject;
         }
     }
 
+    //coroutine for a slow motion effect
     IEnumerator SlowMo()
     {
         Time.timeScale = 0.1f;
         Time.fixedDeltaTime = Time.timeScale * Time.fixedUnscaledDeltaTime;
-        yield return new WaitForSecondsRealtime(0.5f);
+        yield return new WaitForSecondsRealtime(slomoDuration);
         Time.timeScale = 1.0f;
         Time.fixedDeltaTime = Time.timeScale * Time.fixedUnscaledDeltaTime;
     }
 
-    private void StopAim(InputAction.CallbackContext context)
-    {
-        aiming = false;
-    }
-
-    private void StartAim(InputAction.CallbackContext context)
-    {
-        aiming = true;
-    }
-
-    float ClampAngle(float angle, float from, float to)
-    {
-        if (angle < 0f) angle = 360 + angle;
-        if (angle > 180f) return Mathf.Max(angle, 360+from);
-        return Mathf.Min(angle, to);
-    }
-
+    //mouselook function, called whenever any amount of mouse input is detected
     private void Look(InputAction.CallbackContext context)
     {
         Vector2 lookInput = context.ReadValue<Vector2>() * sensitivity;
         transform.localRotation = Quaternion.Euler(
-            ClampAngle(transform.localRotation.eulerAngles.x - lookInput.y, -90, 90), 
+            Utils.ClampAngle(transform.localRotation.eulerAngles.x - lookInput.y, -90, 90), 
             transform.localRotation.eulerAngles.y + lookInput.x, 0);
-    }
-
-    float EaseOut(float x)
-    {
-        return Mathf.Sqrt(1 - Mathf.Pow(x - 1, 2));
     }
 
     void Update()
     {
+        //handle the hand's position depending on whether the player is aiming or not
         if(aiming && heldObject != null)
         {
             hand.transform.localPosition = new Vector3(0, hand.transform.localPosition.y, hand.transform.localPosition.z);
+            
+            //steadily increase throw strength while aiming
             throwStrength += 1.0f/timeToMaxStrength * Time.deltaTime;
             throwStrength = Mathf.Clamp(throwStrength, 0, 1);
         }
@@ -115,17 +109,44 @@ public class PlayerController : MonoBehaviour
             throwStrength = Mathf.Lerp(throwStrength, 0, Time.deltaTime * 10);
         }
 
+        // change camera FOV based on throw strength
+        Camera.main.fieldOfView = baseFov - (throwStrengthFovInfluence * Utils.EaseOut(throwStrength));
+
+        //teleport held object to 
         if(heldObject != null)
         {
             heldObject.transform.position = Vector3.Lerp(heldObject.transform.position, hand.transform.position, Time.deltaTime * 20);
             heldObject.GetComponent<Rigidbody>().isKinematic = true;
         }
 
-        Camera.main.fieldOfView = 80.0f - (20.0f * EaseOut(throwStrength));
+        // fire a ray to detect possible pickups
+        RaycastHit hit;
+        Ray ray = Camera.main.ScreenPointToRay(new Vector3(Screen.width/2, Screen.height/2, 0));
+
+        //if ray hits something, register as a hovered object
+        if (Physics.Raycast(ray, out hit, 10) && hit.transform.gameObject.CompareTag("HeldObject")) 
+        {
+            hoveredObject = hit.transform.gameObject;
+        }
+        else
+        {
+            hoveredObject = null;
+        }
     }
 
     void OnDestroy()
     {
         controls.Disable();
+    }
+
+
+    private void StopAim(InputAction.CallbackContext context)
+    {
+        aiming = false;
+    }
+
+    private void StartAim(InputAction.CallbackContext context)
+    {
+        aiming = true;
     }
 }
