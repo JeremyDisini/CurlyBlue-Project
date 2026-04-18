@@ -49,7 +49,7 @@ public class PlayerController : MonoBehaviour
         
         initialHandPosition = hand.transform.localPosition;
 
-        baseFov = 80.0f;
+        baseFov = Camera.main.fieldOfView;
     }
 
     private void Fire(InputAction.CallbackContext context)
